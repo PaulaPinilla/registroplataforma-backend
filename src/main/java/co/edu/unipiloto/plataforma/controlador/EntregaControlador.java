@@ -1,0 +1,58 @@
+package co.edu.unipiloto.plataforma.controlador;
+
+import co.edu.unipiloto.plataforma.dto.CalificacionRequest;
+import co.edu.unipiloto.plataforma.dto.EntregaActualizarRequest;
+import co.edu.unipiloto.plataforma.dto.EntregaRequest;
+import co.edu.unipiloto.plataforma.dto.EntregaResponse;
+import co.edu.unipiloto.plataforma.servicio.EntregaServicio;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/entregas")
+public class EntregaControlador {
+
+    private final EntregaServicio servicio;
+
+    public EntregaControlador(EntregaServicio servicio) {
+        this.servicio = servicio;
+    }
+
+    @GetMapping
+    public List<EntregaResponse> listar(@RequestParam(required = false) Long actividadId,
+                                        @RequestParam(required = false) Long estudianteId,
+                                        @RequestParam(required = false) Long cursoId) {
+        return servicio.listar(actividadId, estudianteId, cursoId);
+    }
+
+    @GetMapping("/{id}")
+    public EntregaResponse obtener(@PathVariable Long id) {
+        return servicio.obtener(id);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public EntregaResponse entregar(@Valid @RequestBody EntregaRequest req) {
+        return servicio.entregar(req);
+    }
+
+    @PutMapping("/{id}")
+    public EntregaResponse modificar(@PathVariable Long id, @Valid @RequestBody EntregaActualizarRequest req) {
+        return servicio.modificar(id, req);
+    }
+
+    /** Calificacion y retroalimentacion del docente. */
+    @PutMapping("/{id}/calificacion")
+    public EntregaResponse calificar(@PathVariable Long id, @Valid @RequestBody CalificacionRequest req) {
+        return servicio.calificar(id, req);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void eliminar(@PathVariable Long id) {
+        servicio.eliminar(id);
+    }
+}
