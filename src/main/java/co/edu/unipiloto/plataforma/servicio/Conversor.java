@@ -66,6 +66,11 @@ public final class Conversor {
             d.setOfertaNombre(c.getOferta().getNombre());
         }
         d.setFinalizado(c.yaTermino());
+        d.setObjetivos(c.getObjetivos());
+        d.setResultadosAprendizaje(c.getResultadosAprendizaje());
+        d.setCupos(c.getCupos());
+        d.setFechaInicio(c.getFechaInicio());
+        d.setPublicado(c.estaPublicado());
         return d;
     }
 
@@ -117,6 +122,7 @@ public final class Conversor {
         d.setEstudianteNombre(e.getEstudiante().getNombre());
         d.setTextoRespuesta(e.getTextoRespuesta());
         d.setNombreArchivo(e.getNombreArchivo());
+        d.setTieneArchivo(e.getRutaArchivo() != null);
         d.setFechaEntrega(e.getFechaEntrega());
         d.setCalificada(e.estaCalificada());
         d.setCalificacion(e.getCalificacion());
@@ -135,6 +141,105 @@ public final class Conversor {
         d.setPuntaje(e.getPuntaje());
         d.setComentario(e.getComentario());
         d.setFecha(e.getFecha());
+        return d;
+    }
+
+    public static NotificacionResponse aNotificacion(Notificacion n) {
+        NotificacionResponse d = new NotificacionResponse();
+        d.setId(n.getId());
+        d.setDestinatarioId(n.getDestinatario().getId());
+        d.setDestinatarioNombre(n.getDestinatario().getNombre());
+        if (n.getRemitente() != null) {
+            d.setRemitenteId(n.getRemitente().getId());
+            d.setRemitenteNombre(n.getRemitente().getNombre());
+        }
+        d.setTipo(n.getTipo());
+        d.setTitulo(n.getTitulo());
+        d.setMensaje(n.getMensaje());
+        d.setCursoId(n.getCursoId());
+        d.setLeida(Boolean.TRUE.equals(n.getLeida()));
+        d.setFecha(n.getFecha());
+        return d;
+    }
+
+    public static ContenidoResponse aContenido(Contenido c) {
+        ContenidoResponse d = new ContenidoResponse();
+        d.setId(c.getId());
+        d.setTitulo(c.getTitulo());
+        d.setDescripcion(c.getDescripcion());
+        d.setTipo(c.getTipo());
+        d.setUrl(c.getUrl());
+        d.setTieneArchivo(c.getRutaArchivo() != null);
+        d.setNombreArchivo(c.getNombreArchivo());
+        d.setTamanoBytes(c.getTamanoBytes());
+        d.setFechaPublicacion(c.getFechaPublicacion());
+        d.setUnidadId(c.getUnidad().getId());
+        d.setUnidadTitulo(c.getUnidad().getTitulo());
+        d.setCursoId(c.getUnidad().getCurso().getId());
+        return d;
+    }
+
+    public static ForoResponse aForo(Foro f, long totalMensajes) {
+        ForoResponse d = new ForoResponse();
+        d.setId(f.getId());
+        d.setCursoId(f.getCurso().getId());
+        d.setTitulo(f.getTitulo());
+        d.setDescripcion(f.getDescripcion());
+        d.setTipo(f.getTipo());
+        d.setAbierto(f.estaAbierto());
+        d.setCreadorId(f.getCreador().getId());
+        d.setCreadorNombre(f.getCreador().getNombre());
+        d.setFechaCreacion(f.getFechaCreacion());
+        d.setTotalMensajes(totalMensajes);
+        return d;
+    }
+
+    public static MensajeResponse aMensaje(MensajeForo m) {
+        MensajeResponse d = new MensajeResponse();
+        d.setId(m.getId());
+        d.setForoId(m.getForo().getId());
+        d.setAutorId(m.getAutor().getId());
+        d.setAutorNombre(m.getAutor().getNombre());
+        d.setAutorRol(m.getAutor().getRol().getNombre());
+        d.setContenido(m.getContenido());
+        d.setRespuestaAId(m.getRespuestaAId());
+        d.setFecha(m.getFecha());
+        return d;
+    }
+
+    public static ReclamoResponse aReclamo(Reclamo r) {
+        ReclamoResponse d = new ReclamoResponse();
+        d.setId(r.getId());
+        d.setEntregaId(r.getEntrega().getId());
+        d.setActividadTitulo(r.getEntrega().getActividad().getTitulo());
+        d.setCursoId(r.getEntrega().getActividad().getUnidad().getCurso().getId());
+        d.setEstudianteId(r.getEstudiante().getId());
+        d.setEstudianteNombre(r.getEstudiante().getNombre());
+        d.setMotivo(r.getMotivo());
+        d.setEstado(r.getEstado());
+        d.setRespuesta(r.getRespuesta());
+        d.setNotaAnterior(r.getNotaAnterior());
+        d.setNotaNueva(r.getNotaNueva());
+        if (r.getDocente() != null) {
+            d.setDocenteId(r.getDocente().getId());
+        }
+        d.setFechaCreacion(r.getFechaCreacion());
+        d.setFechaRespuesta(r.getFechaRespuesta());
+        return d;
+    }
+
+    public static CertificadoResponse aCertificado(Certificado c) {
+        CertificadoResponse d = new CertificadoResponse();
+        d.setId(c.getId());
+        d.setCodigo(c.getCodigo());
+        d.setEstudianteId(c.getEstudiante().getId());
+        d.setEstudianteNombre(c.getEstudiante().getNombre());
+        d.setCursoId(c.getCurso().getId());
+        d.setCursoTitulo(c.getCurso().getTitulo());
+        d.setNotaFinal(c.getNotaFinal());
+        d.setEstado(c.getEstado());
+        d.setFechaSolicitud(c.getFechaSolicitud());
+        d.setFechaEmision(c.getFechaEmision());
         return d;
     }
 }

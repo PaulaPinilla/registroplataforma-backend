@@ -13,6 +13,9 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -82,6 +85,23 @@ public class ManejadorErrores {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ErrorRespuesta> metodoNoPermitido(HttpRequestMethodNotSupportedException ex, HttpServletRequest req) {
         return construir(HttpStatus.METHOD_NOT_ALLOWED, "Metodo HTTP no permitido para esta ruta: " + ex.getMethod(), req, null);
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<ErrorRespuesta> parteFaltante(MissingServletRequestPartException ex, HttpServletRequest req) {
+        return construir(HttpStatus.BAD_REQUEST,
+                "Falta el campo '" + ex.getRequestPartName() + "' (en Postman: Body > form-data, tipo File)", req, null);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorRespuesta> archivoGrande(MaxUploadSizeExceededException ex, HttpServletRequest req) {
+        return construir(HttpStatus.PAYLOAD_TOO_LARGE, "El archivo supera el tamano maximo permitido (10 MB)", req, null);
+    }
+
+    @ExceptionHandler(MultipartException.class)
+    public ResponseEntity<ErrorRespuesta> noMultipart(MultipartException ex, HttpServletRequest req) {
+        return construir(HttpStatus.BAD_REQUEST,
+                "La peticion debe enviarse como multipart/form-data con el archivo (en Postman: Body > form-data, tipo File)", req, null);
     }
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)

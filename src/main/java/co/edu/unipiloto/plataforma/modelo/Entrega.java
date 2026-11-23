@@ -28,6 +28,9 @@ public class Entrega {
     @Column(length = 255)
     private String nombreArchivo;
 
+    @Column(length = 255)
+    private String rutaArchivo;
+
     private LocalDateTime fechaEntrega;
 
     private Double calificacion;
@@ -51,6 +54,9 @@ public class Entrega {
 
     public String getNombreArchivo() { return nombreArchivo; }
     public void setNombreArchivo(String nombreArchivo) { this.nombreArchivo = nombreArchivo; }
+
+    public String getRutaArchivo() { return rutaArchivo; }
+    public void setRutaArchivo(String rutaArchivo) { this.rutaArchivo = rutaArchivo; }
 
     public LocalDateTime getFechaEntrega() { return fechaEntrega; }
     public void setFechaEntrega(LocalDateTime fechaEntrega) { this.fechaEntrega = fechaEntrega; }

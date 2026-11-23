@@ -32,6 +32,16 @@ public class CursoResponse {
 
     private boolean finalizado;
 
+    private String objetivos;
+
+    private String resultadosAprendizaje;
+
+    private Integer cupos;
+
+    private LocalDateTime fechaInicio;
+
+    private boolean publicado;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -73,5 +83,20 @@ public class CursoResponse {
 
     public boolean isFinalizado() { return finalizado; }
     public void setFinalizado(boolean finalizado) { this.finalizado = finalizado; }
+
+    public String getObjetivos() { return objetivos; }
+    public void setObjetivos(String objetivos) { this.objetivos = objetivos; }
+
+    public String getResultadosAprendizaje() { return resultadosAprendizaje; }
+    public void setResultadosAprendizaje(String resultadosAprendizaje) { this.resultadosAprendizaje = resultadosAprendizaje; }
+
+    public Integer getCupos() { return cupos; }
+    public void setCupos(Integer cupos) { this.cupos = cupos; }
+
+    public LocalDateTime getFechaInicio() { return fechaInicio; }
+    public void setFechaInicio(LocalDateTime fechaInicio) { this.fechaInicio = fechaInicio; }
+
+    public boolean isPublicado() { return publicado; }
+    public void setPublicado(boolean publicado) { this.publicado = publicado; }
 
 }

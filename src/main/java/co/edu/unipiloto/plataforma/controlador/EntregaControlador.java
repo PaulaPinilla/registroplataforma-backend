@@ -6,7 +6,9 @@ import co.edu.unipiloto.plataforma.dto.EntregaRequest;
 import co.edu.unipiloto.plataforma.dto.EntregaResponse;
 import co.edu.unipiloto.plataforma.servicio.EntregaServicio;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -54,5 +56,27 @@ public class EntregaControlador {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void eliminar(@PathVariable Long id) {
         servicio.eliminar(id);
+    }
+
+    /** Entrega con archivo (form-data): actividadId, estudianteId, archivo (File) y, opcional, textoRespuesta. */
+    @PostMapping("/archivo")
+    @ResponseStatus(HttpStatus.CREATED)
+    public EntregaResponse entregarConArchivo(@RequestParam Long actividadId, @RequestParam Long estudianteId,
+                                              @RequestParam(required = false) String textoRespuesta,
+                                              @RequestParam("archivo") MultipartFile archivo) {
+        return servicio.entregarConArchivo(actividadId, estudianteId, textoRespuesta, archivo);
+    }
+
+    /** El estudiante reemplaza su archivo antes de ser calificado (form-data: estudianteId y archivo). */
+    @PutMapping("/{id}/archivo")
+    public EntregaResponse reemplazarArchivo(@PathVariable Long id, @RequestParam Long estudianteId,
+                                             @RequestParam("archivo") MultipartFile archivo) {
+        return servicio.reemplazarArchivo(id, estudianteId, archivo);
+    }
+
+    /** Descarga del archivo entregado. Ejemplo: GET /api/entregas/1/archivo?usuarioId=2 */
+    @GetMapping("/{id}/archivo")
+    public ResponseEntity<byte[]> descargarArchivo(@PathVariable Long id, @RequestParam Long usuarioId) {
+        return Descarga.de(servicio.descargarArchivo(id, usuarioId));
     }
 }

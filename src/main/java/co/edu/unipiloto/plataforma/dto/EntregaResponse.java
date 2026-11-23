@@ -18,6 +18,8 @@ public class EntregaResponse {
 
     private String nombreArchivo;
 
+    private boolean tieneArchivo;
+
     private LocalDateTime fechaEntrega;
 
     private boolean calificada;
@@ -48,6 +50,9 @@ public class EntregaResponse {
 
     public String getNombreArchivo() { return nombreArchivo; }
     public void setNombreArchivo(String nombreArchivo) { this.nombreArchivo = nombreArchivo; }
+
+    public boolean isTieneArchivo() { return tieneArchivo; }
+    public void setTieneArchivo(boolean tieneArchivo) { this.tieneArchivo = tieneArchivo; }
 
     public LocalDateTime getFechaEntrega() { return fechaEntrega; }
     public void setFechaEntrega(LocalDateTime fechaEntrega) { this.fechaEntrega = fechaEntrega; }

@@ -6,7 +6,7 @@ import co.edu.unipiloto.plataforma.repositorio.RolRepositorio;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-/** Al iniciar el servidor crea los dos roles base si todavia no existen. */
+/** Al iniciar el servidor crea los tres roles base si todavia no existen. */
 @Component
 public class DatosIniciales implements CommandLineRunner {
 
@@ -18,6 +18,7 @@ public class DatosIniciales implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        crearSiNoExiste(Roles.COORDINADOR, "Coordinador o director: publica cursos, fija cupos y fechas, asigna docentes, notifica y consulta reportes");
         crearSiNoExiste(Roles.DOCENTE, "Docente: crea cursos y actividades, evalua y retroalimenta");
         crearSiNoExiste(Roles.ESTUDIANTE, "Estudiante: se matricula, entrega actividades y evalua los cursos");
     }

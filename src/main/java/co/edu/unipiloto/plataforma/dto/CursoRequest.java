@@ -42,6 +42,17 @@ public class CursoRequest {
 
     private Long ofertaId;
 
+    @Size(max = 2000, message = "Los objetivos admiten maximo 2000 caracteres")
+    private String objetivos;
+
+    @Size(max = 2000, message = "Los resultados admiten maximo 2000 caracteres")
+    private String resultadosAprendizaje;
+
+    @Min(value = 1, message = "Debe haber al menos 1 cupo")
+    private Integer cupos;
+
+    private LocalDateTime fechaInicio;
+
     public String getTitulo() { return titulo; }
     public void setTitulo(String titulo) { this.titulo = titulo; }
 
@@ -71,5 +82,17 @@ public class CursoRequest {
 
     public Long getOfertaId() { return ofertaId; }
     public void setOfertaId(Long ofertaId) { this.ofertaId = ofertaId; }
+
+    public String getObjetivos() { return objetivos; }
+    public void setObjetivos(String objetivos) { this.objetivos = objetivos; }
+
+    public String getResultadosAprendizaje() { return resultadosAprendizaje; }
+    public void setResultadosAprendizaje(String resultadosAprendizaje) { this.resultadosAprendizaje = resultadosAprendizaje; }
+
+    public Integer getCupos() { return cupos; }
+    public void setCupos(Integer cupos) { this.cupos = cupos; }
+
+    public LocalDateTime getFechaInicio() { return fechaInicio; }
+    public void setFechaInicio(LocalDateTime fechaInicio) { this.fechaInicio = fechaInicio; }
 
 }

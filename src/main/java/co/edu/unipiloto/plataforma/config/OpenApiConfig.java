@@ -8,8 +8,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(info = @Info(
         title = "API RegistroPlataforma",
-        version = "1.0.0",
+        version = "2.0.0",
         description = "Servicios REST de la plataforma de cursos virtuales: ofertas, roles, usuarios, cursos, "
-                + "unidades, actividades, matriculas, entregas, evaluacion de cursos, seguimiento de progreso y estadisticas."))
+                + "unidades, actividades, matriculas, entregas, evaluacion de cursos, seguimiento de progreso y estadisticas; "
+                + "publicacion de cursos, contenidos, foros y chat, procesos de formacion, reclamos, certificados, notificaciones y reportes."))
 public class OpenApiConfig {
 }

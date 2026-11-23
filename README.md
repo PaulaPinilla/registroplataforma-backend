@@ -1,4 +1,4 @@
-# RegistroPlataforma - Backend (Entrega 7, Parte 1)
+# RegistroPlataforma - Backend (Entrega 7 y Entrega 8)
 
 Servicios REST con persistencia para la plataforma de cursos virtuales (el frontend es la app Android `RegistroPlataforma`).
 
@@ -112,3 +112,51 @@ El archivo `.gitignore` ya excluye `target/` y `data/`.
 | `Port 8080 was already in use` | Cierre lo que use el puerto, o cambie `server.port` en `application.properties` |
 | 400 en Postman con `JSON invalido` | Revise que el Body sea raw > JSON y que las fechas sean `2026-12-31T23:59:00` |
 | Error de dependencias al compilar | Revise su conexion a internet (Maven descarga las librerias la primera vez) |
+
+
+---
+
+# Entrega 8 (Parte 2): roles Coordinador, Docente y Estudiante
+
+## 8. Que se agrego
+
+| Rol | Funcionalidad | Endpoints principales |
+|---|---|---|
+| Coordinador | Publicar curso con objetivos, resultados, cupos y fechas | `PUT /api/cursos/{id}/publicacion`, `PUT /api/cursos/{id}/despublicar` |
+| Coordinador | Asignar curso a docente (notifica al docente) | `PUT /api/cursos/{id}/docente` |
+| Coordinador | Reportes y estadisticas | `GET /api/reportes/plataforma`, `GET /api/estadisticas/...` |
+| Coordinador / Docente | Enviar notificaciones | `POST /api/notificaciones/enviar` |
+| Todos | Catalogo de cursos publicados con cupos disponibles | `GET /api/catalogo` |
+| Docente | Configurar curso (porcentajes, secciones, pendientes) | `GET /api/cursos/{id}/configuracion` |
+| Docente | Publicar contenidos y subir archivos | `/api/contenidos` |
+| Docente | Actividades (taller, evaluacion, tarea), unidades | `/api/actividades`, `/api/unidades` |
+| Docente | Evaluacion y retroalimentacion | `PUT /api/entregas/{id}/calificacion` |
+| Docente | Seguimiento de progreso | `/api/seguimiento/...` |
+| Docente / Estudiante | Foros y chat | `/api/foros`, `/api/foros/{id}/mensajes` |
+| Docente | Procesos de formacion (actividades en secuencia) | `/api/procesos` |
+| Docente | Atencion de reclamos | `/api/reclamos`, `PUT /api/reclamos/{id}/respuesta` |
+| Estudiante | Inscripcion y retiro | `POST /api/matriculas`, `POST /api/matriculas/retiro` |
+| Estudiante | Entregar actividades con archivo, descargar material | `POST /api/entregas/archivo`, `GET /api/contenidos/{id}/archivo` |
+| Estudiante | Consultar porcentajes y notas | `GET /api/seguimiento/cursos/{c}/estudiantes/{e}` |
+| Estudiante | Reclamos y certificados | `POST /api/reclamos`, `POST /api/certificados` |
+
+Reglas nuevas: un curso solo admite matriculas si esta **publicado**; los cupos del curso se suman a los de la oferta; el retiro se bloquea si el curso termino o ya hay certificado; un reclamo debe hacerse en maximo 10 dias y, si se acepta, recalcula la nota final; el certificado solo se emite con curso aprobado (nota final 3.0 o mas) y tiene un codigo verificable `CERT-XXXXXXXXXXXX`.
+
+Archivos: se guardan en la carpeta `archivos/` (maximo 10 MB; extensiones permitidas: pdf, doc(x), xls(x), ppt(x), txt, csv, zip, png, jpg...).
+
+Identificacion: no hay token. El usuario que actua se envia como id (`coordinadorId`, `docenteId`, `estudianteId`, `usuarioId`) y el servidor valida su rol (403 si no corresponde). JWT queda como mejora para la Parte 3.
+
+## 9. Actualizar desde la Parte 1
+
+1. Detenga el servidor (Ctrl+C).
+2. Reemplace el contenido de la carpeta del proyecto por el de este zip.
+3. **Borre la carpeta `data`** para una demo limpia.
+4. Ejecute `iniciar.bat` desde CMD.
+5. En Postman importe de nuevo `postman/RegistroPlataforma.postman_collection.json`.
+
+## 10. Demostracion con Postman (Parte 2)
+
+Ejecute las carpetas **00 a 19 en orden** (clic derecho en la carpeta > Run, o Send una por una). Cada peticion tiene pruebas automaticas.
+La carpeta **20 Archivos** se hace a mano: en Body > form-data, fila `archivo`, elija un archivo con *Select Files* y pulse Send. Luego ejecute la carpeta **21**.
+
+Orden del flujo: crear usuarios y curso (00-06) > contenidos y configuracion (07) > coordinador publica (08) > estudiantes se inscriben (09) > proceso de formacion (10) > entregas y notas (11-13) > reclamos (14) > certificado (15) > foros (16) > notificaciones (17) > evaluacion del curso, reportes (18-19) > archivos (20) > retiro y limpieza (21).

@@ -1,7 +1,7 @@
 {
   "info": {
-    "name": "RegistroPlataforma - Backend Entrega 7",
-    "description": "Demo de sustentacion. Ejecutar en orden (Runner) con el servidor en http://localhost:8080. Cada carpeta guarda los ids que necesita la siguiente.",
+    "name": "RegistroPlataforma - Backend (Entrega 7 y 8)",
+    "description": "Demo de sustentacion. Ejecutar en orden con el servidor en http://localhost:8080. La carpeta 20 requiere seleccionar un archivo a mano. Cada carpeta guarda los ids que necesita la siguiente.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -62,6 +62,9 @@
                   "pm.test('Existen los roles DOCENTE y ESTUDIANTE', function () { pm.expect(d).to.exist; pm.expect(e).to.exist; });",
                   "pm.collectionVariables.set('rolDocenteId', d.id);",
                   "pm.collectionVariables.set('rolEstudianteId', e.id);",
+                  "var c = roles.find(function (r) { return r.nombre === 'COORDINADOR'; });",
+                  "pm.test('Existe el rol COORDINADOR', function () { pm.expect(c).to.exist; });",
+                  "pm.collectionVariables.set('rolCoordinadorId', c.id);",
                   "pm.collectionVariables.set('sufijo', String(Date.now()));"
                 ]
               }
@@ -74,7 +77,7 @@
       "name": "01 CRUD Roles",
       "item": [
         {
-          "name": "Crear rol COORDINADOR",
+          "name": "Crear rol de prueba SUPERVISOR",
           "request": {
             "method": "POST",
             "header": [
@@ -95,7 +98,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"coordinador\",\n  \"descripcion\": \"Rol de prueba\"\n}",
+              "raw": "{\n  \"nombre\": \"supervisor\",\n  \"descripcion\": \"Rol de prueba\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -111,7 +114,7 @@
                 "exec": [
                   "pm.test(\"Codigo 201\", function () { pm.response.to.have.status(201); });",
                   "pm.collectionVariables.set(\"rolPruebaId\", pm.response.json().id);",
-                  "pm.test(\"Nombre en mayusculas\", function () { pm.expect(pm.response.json().nombre).to.eql(\"COORDINADOR\"); });"
+                  "pm.test(\"Nombre en mayusculas\", function () { pm.expect(pm.response.json().nombre).to.eql(\"SUPERVISOR\"); });"
                 ]
               }
             }
@@ -139,7 +142,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"COORDINADOR\"\n}",
+              "raw": "{\n  \"nombre\": \"SUPERVISOR\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -211,7 +214,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nombre\": \"COORDINADOR\",\n  \"descripcion\": \"Descripcion actualizada\"\n}",
+              "raw": "{\n  \"nombre\": \"SUPERVISOR\",\n  \"descripcion\": \"Descripcion actualizada\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -376,6 +379,92 @@
                   "pm.test(\"Codigo 201\", function () { pm.response.to.have.status(201); });",
                   "pm.collectionVariables.set(\"docenteId\", pm.response.json().id);",
                   "pm.test(\"No devuelve la contrasena\", function () { pm.expect(pm.response.json()).to.not.have.property(\"contrasena\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear coordinador",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "usuarios"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Carlos Coordinador\",\n  \"correo\": \"coordinador{{sufijo}}@ica.gov.co\",\n  \"contrasena\": \"clave123\",\n  \"rolId\": {{rolCoordinadorId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.collectionVariables.set(\"coordinadorId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Crear docente 2",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "usuarios"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Diana Docente\",\n  \"correo\": \"docente2{{sufijo}}@ica.gov.co\",\n  \"contrasena\": \"clave123\",\n  \"rolId\": {{rolDocenteId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.collectionVariables.set(\"docente2Id\", pm.response.json().id);"
                 ]
               }
             }
@@ -1793,7 +1882,628 @@
       ]
     },
     {
-      "name": "07 Proceso formativo: matricula",
+      "name": "07 Docente: contenidos y configuracion del curso",
+      "item": [
+        {
+          "name": "Publicar contenido tipo ENLACE",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/contenidos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "contenidos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docenteId\": {{docenteId}},\n  \"unidadId\": {{unidadId}},\n  \"titulo\": \"Guia de inspeccion (enlace)\",\n  \"descripcion\": \"Lectura previa\",\n  \"tipo\": \"ENLACE\",\n  \"url\": \"https://www.ica.gov.co\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.collectionVariables.set(\"contenidoId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Publicar contenido tipo DOCUMENTO (el archivo se sube despues)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/contenidos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "contenidos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docenteId\": {{docenteId}},\n  \"unidadId\": {{unidadId}},\n  \"titulo\": \"Manual del curso\",\n  \"descripcion\": \"Documento principal\",\n  \"tipo\": \"DOCUMENTO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.collectionVariables.set(\"contenidoDocId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ENLACE sin url (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/contenidos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "contenidos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docenteId\": {{docenteId}},\n  \"unidadId\": {{unidadId}},\n  \"titulo\": \"Sin url\",\n  \"tipo\": \"ENLACE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 400\", function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Un estudiante NO puede publicar contenidos (403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/contenidos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "contenidos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docenteId\": {{estudianteId}},\n  \"unidadId\": {{unidadId}},\n  \"titulo\": \"Intruso\",\n  \"tipo\": \"LECTURA\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 403\", function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar contenidos del curso",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/contenidos?cursoId={{cursoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "contenidos"
+              ],
+              "query": [
+                {
+                  "key": "cursoId",
+                  "value": "{{cursoId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Hay 2 contenidos\", function () { pm.expect(pm.response.json().length).to.eql(2); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar contenido",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/contenidos/{{contenidoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "contenidos",
+                "{{contenidoId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docenteId\": {{docenteId}},\n  \"unidadId\": {{unidadId}},\n  \"titulo\": \"Guia de inspeccion (actualizada)\",\n  \"tipo\": \"ENLACE\",\n  \"url\": \"https://www.ica.gov.co/areas\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Configuracion del curso: listo para publicar",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cursos/{{cursoId}}/configuracion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cursos",
+                "{{cursoId}}",
+                "configuracion"
+              ]
+            },
+            "description": "Resume secciones, porcentajes por corte y contenidos. Si falta algo aparece en 'pendientes'."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "var j = pm.response.json();",
+                  "pm.test(\"Pesos validos y cortes completos\", function () { pm.expect(j.pesosValidos).to.eql(true); j.cortes.forEach(function (c) { pm.expect(c.completo).to.eql(true); }); });",
+                  "pm.test(\"Listo para publicar\", function () { pm.expect(j.listoParaPublicar).to.eql(true); pm.expect(j.pendientes.length).to.eql(0); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "08 Coordinador: asignar docente, publicar curso y catalogo",
+      "item": [
+        {
+          "name": "Matricular antes de publicar (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/matriculas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "matriculas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estudianteId\": {{estudianteId}},\n  \"cursoId\": {{cursoId}},\n  \"clave\": \"ICA2026\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 400\", function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Un docente NO puede publicar (403)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/cursos/{{cursoId}}/publicacion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cursos",
+                "{{cursoId}}",
+                "publicacion"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coordinadorId\": {{docenteId}},\n  \"objetivos\": \"Aplicar los procedimientos de inspeccion fitosanitaria\",\n  \"resultadosAprendizaje\": \"El estudiante identifica plagas y diligencia actas de inspeccion\",\n  \"cupos\": 30,\n  \"fechaInicio\": \"{{fechaAyer}}\",\n  \"fechaFinalizacion\": \"{{fechaEn90}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 403\", function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Publicar con cupos invalidos (400)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/cursos/{{cursoId}}/publicacion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cursos",
+                "{{cursoId}}",
+                "publicacion"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coordinadorId\": {{coordinadorId}},\n  \"objetivos\": \"Aplicar los procedimientos de inspeccion fitosanitaria\",\n  \"resultadosAprendizaje\": \"El estudiante identifica plagas y diligencia actas de inspeccion\",\n  \"cupos\": 0,\n  \"fechaInicio\": \"{{fechaAyer}}\",\n  \"fechaFinalizacion\": \"{{fechaEn90}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 400\", function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Coordinador asigna el curso al docente 2",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/cursos/{{cursoId}}/docente",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cursos",
+                "{{cursoId}}",
+                "docente"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coordinadorId\": {{coordinadorId}},\n  \"docenteId\": {{docente2Id}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Docente 2 asignado\", function () { pm.expect(pm.response.json().docenteId).to.eql(parseInt(pm.collectionVariables.get(\"docente2Id\"))); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "El docente 2 recibio la notificacion de asignacion",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notificaciones?usuarioId={{docente2Id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notificaciones"
+              ],
+              "query": [
+                {
+                  "key": "usuarioId",
+                  "value": "{{docente2Id}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Hay una notificacion ASIGNACION_CURSO\", function () { var t = pm.response.json().filter(function (n) { return n.tipo === \"ASIGNACION_CURSO\"; }); pm.expect(t.length).to.be.above(0); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Coordinador devuelve el curso al docente original",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/cursos/{{cursoId}}/docente",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cursos",
+                "{{cursoId}}",
+                "docente"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coordinadorId\": {{coordinadorId}},\n  \"docenteId\": {{docenteId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Coordinador publica el curso (objetivos, resultados, cupos y fechas)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/cursos/{{cursoId}}/publicacion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cursos",
+                "{{cursoId}}",
+                "publicacion"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"coordinadorId\": {{coordinadorId}},\n  \"objetivos\": \"Aplicar los procedimientos de inspeccion fitosanitaria\",\n  \"resultadosAprendizaje\": \"El estudiante identifica plagas y diligencia actas de inspeccion\",\n  \"cupos\": 30,\n  \"fechaInicio\": \"{{fechaAyer}}\",\n  \"fechaFinalizacion\": \"{{fechaEn90}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "var j = pm.response.json();",
+                  "pm.test(\"Queda publicado con cupos\", function () { pm.expect(j.publicado).to.eql(true); pm.expect(j.cupos).to.eql(30); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Catalogo de cursos disponibles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/catalogo",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "catalogo"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"El curso aparece con cupos disponibles\", function () { var id = parseInt(pm.collectionVariables.get(\"cursoId\")); var c = pm.response.json().find(function (x) { return x.id === id; }); pm.expect(c).to.exist; pm.expect(c.cuposDisponibles).to.eql(30); pm.expect(c.objetivos).to.be.a(\"string\"); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "09 Estudiante: inscripcion (matricula)",
       "item": [
         {
           "name": "Matricular con clave incorrecta (403)",
@@ -2040,11 +2750,323 @@
               }
             }
           ]
+        },
+        {
+          "name": "Cupos disponibles se actualizan",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/catalogo",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "catalogo"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Quedan 28 cupos\", function () { var id = parseInt(pm.collectionVariables.get(\"cursoId\")); var c = pm.response.json().find(function (x) { return x.id === id; }); pm.expect(c.cuposDisponibles).to.eql(28); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "El docente recibio aviso de las matriculas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notificaciones?usuarioId={{docenteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notificaciones"
+              ],
+              "query": [
+                {
+                  "key": "usuarioId",
+                  "value": "{{docenteId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Hay notificaciones de matricula\", function () { pm.expect(pm.response.json().length).to.be.above(1); });"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
     {
-      "name": "08 Entregas, evaluacion y retroalimentacion",
+      "name": "10 Docente: proceso de formacion (actividades en secuencia)",
+      "item": [
+        {
+          "name": "Crear proceso: Parcial y luego Proyecto final",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/procesos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "procesos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cursoId\": {{cursoId}},\n  \"docenteId\": {{docenteId}},\n  \"nombre\": \"Ruta de evaluacion final\",\n  \"descripcion\": \"El proyecto final solo se habilita al entregar el parcial\",\n  \"actividadIds\": [\n    {{act3Id}},\n    {{act4Id}}\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.collectionVariables.set(\"procesoId\", pm.response.json().id);",
+                  "pm.test(\"2 pasos ordenados\", function () { var p = pm.response.json().pasos; pm.expect(p.length).to.eql(2); pm.expect(p[0].orden).to.eql(1); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Una actividad no puede estar en dos procesos (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/procesos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "procesos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cursoId\": {{cursoId}},\n  \"docenteId\": {{docenteId}},\n  \"nombre\": \"Otro proceso\",\n  \"actividadIds\": [\n    {{act3Id}},\n    {{act1Id}}\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 409\", function () { pm.response.to.have.status(409); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Proceso con una sola actividad (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/procesos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "procesos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cursoId\": {{cursoId}},\n  \"docenteId\": {{docenteId}},\n  \"nombre\": \"Corto\",\n  \"actividadIds\": [\n    {{act1Id}}\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 400\", function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Progreso del estudiante 2: proyecto BLOQUEADO",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/procesos/{{procesoId}}/progreso?estudianteId={{estudiante2Id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "procesos",
+                "{{procesoId}}",
+                "progreso"
+              ],
+              "query": [
+                {
+                  "key": "estudianteId",
+                  "value": "{{estudiante2Id}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "var p = pm.response.json().pasos;",
+                  "pm.test(\"Parcial DISPONIBLE y proyecto BLOQUEADO\", function () { pm.expect(p[0].estado).to.eql(\"DISPONIBLE\"); pm.expect(p[1].estado).to.eql(\"BLOQUEADO\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Entregar el proyecto sin haber entregado el parcial (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/entregas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "entregas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"actividadId\": {{act4Id}},\n  \"estudianteId\": {{estudiante2Id}},\n  \"textoRespuesta\": \"Mi respuesta a la actividad\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"Explica el orden\", function () { pm.expect(pm.response.json().mensaje).to.include(\"en orden\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar procesos del curso",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/procesos?cursoId={{cursoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "procesos"
+              ],
+              "query": [
+                {
+                  "key": "cursoId",
+                  "value": "{{cursoId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "11 Entregas, evaluacion y retroalimentacion",
       "item": [
         {
           "name": "Estudiante 1 entrega A1",
@@ -2133,7 +3155,7 @@
           ]
         },
         {
-          "name": "Estudiante 1 entrega B1",
+          "name": "Estudiante 1 entrega B1 (parcial, paso 1 del proceso)",
           "request": {
             "method": "POST",
             "header": [
@@ -2176,7 +3198,7 @@
           ]
         },
         {
-          "name": "Estudiante 1 entrega C1",
+          "name": "Estudiante 1 entrega C1 (proyecto, paso 2: ya habilitado)",
           "request": {
             "method": "POST",
             "header": [
@@ -2262,6 +3284,45 @@
           ]
         },
         {
+          "name": "El docente recibio las entregas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notificaciones?usuarioId={{docenteId}}&soloNoLeidas=true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notificaciones"
+              ],
+              "query": [
+                {
+                  "key": "usuarioId",
+                  "value": "{{docenteId}}"
+                },
+                {
+                  "key": "soloNoLeidas",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Hay avisos ENTREGA_RECIBIDA\", function () { var t = pm.response.json().filter(function (n) { return n.tipo === \"ENTREGA_RECIBIDA\"; }); pm.expect(t.length).to.be.above(0); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "Entrega repetida (409)",
           "request": {
             "method": "POST",
@@ -2325,7 +3386,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"actividadId\": {{act3Id}},\n  \"estudianteId\": {{estudiante2Id}}\n}",
+              "raw": "{\n  \"actividadId\": {{act2Id}},\n  \"estudianteId\": {{estudiante2Id}}\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2646,7 +3707,7 @@
       ]
     },
     {
-      "name": "09 Seguimiento de progreso (parcial)",
+      "name": "12 Seguimiento de progreso (parcial)",
       "item": [
         {
           "name": "Progreso del estudiante 1 (aun EN_CURSO)",
@@ -2687,7 +3748,7 @@
       ]
     },
     {
-      "name": "10 Calificar el resto y ver nota final",
+      "name": "13 Calificar el resto y consultar notas y porcentajes",
       "item": [
         {
           "name": "Docente califica B1 con 5.0",
@@ -2778,7 +3839,7 @@
           ]
         },
         {
-          "name": "Progreso final del estudiante 1 (nota 3.35 APROBADO)",
+          "name": "Estudiante consulta sus notas y porcentajes (3.35 APROBADO)",
           "request": {
             "method": "GET",
             "header": [],
@@ -2807,7 +3868,43 @@
                   "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
                   "var j = pm.response.json();",
                   "pm.test(\"Nota final 3.35\", function () { pm.expect(j.notaFinal).to.eql(3.35); });",
-                  "pm.test(\"APROBADO\", function () { pm.expect(j.estado).to.eql(\"APROBADO\"); });"
+                  "pm.test(\"APROBADO\", function () { pm.expect(j.estado).to.eql(\"APROBADO\"); });",
+                  "pm.test(\"Muestra porcentaje y nota de cada actividad\", function () { var a = j.cortes[0].actividades[0]; pm.expect(a.porcentaje).to.eql(50); pm.expect(a.nota).to.eql(4); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "El estudiante recibio sus calificaciones por notificacion",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notificaciones?usuarioId={{estudianteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notificaciones"
+              ],
+              "query": [
+                {
+                  "key": "usuarioId",
+                  "value": "{{estudianteId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Hay notificaciones CALIFICACION\", function () { var t = pm.response.json().filter(function (n) { return n.tipo === \"CALIFICACION\"; }); pm.expect(t.length).to.eql(4); });"
                 ]
               }
             }
@@ -2843,11 +3940,1684 @@
               }
             }
           ]
+        },
+        {
+          "name": "Progreso del proceso de formacion (estudiante 1 completo)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/procesos/{{procesoId}}/progreso?estudianteId={{estudianteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "procesos",
+                "{{procesoId}}",
+                "progreso"
+              ],
+              "query": [
+                {
+                  "key": "estudianteId",
+                  "value": "{{estudianteId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"100% completado\", function () { pm.expect(pm.response.json().porcentajeCompletado).to.eql(100); });"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
     {
-      "name": "11 CRUD Evaluacion del curso",
+      "name": "14 Atencion de reclamos por evaluacion",
+      "item": [
+        {
+          "name": "Estudiante 1 reclama su nota del proyecto (2.0)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reclamos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reclamos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entregaId\": {{entrega4Id}},\n  \"estudianteId\": {{estudianteId}},\n  \"motivo\": \"Considero que la rubrica del proyecto se cumplio completa\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.collectionVariables.set(\"reclamoId\", pm.response.json().id);",
+                  "pm.test(\"Queda ABIERTO\", function () { pm.expect(pm.response.json().estado).to.eql(\"ABIERTO\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Segundo reclamo abierto sobre la misma entrega (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reclamos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reclamos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entregaId\": {{entrega4Id}},\n  \"estudianteId\": {{estudianteId}},\n  \"motivo\": \"Insisto en mi reclamo del proyecto\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 409\", function () { pm.response.to.have.status(409); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reclamar la entrega de otro estudiante (403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reclamos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reclamos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entregaId\": {{entrega1Id}},\n  \"estudianteId\": {{estudiante2Id}},\n  \"motivo\": \"Quiero reclamar una nota ajena\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 403\", function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reclamar una entrega sin calificar (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reclamos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reclamos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entregaId\": {{entrega5Id}},\n  \"estudianteId\": {{estudiante2Id}},\n  \"motivo\": \"Aun no han calificado mi trabajo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 400\", function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "El docente ve los reclamos abiertos de su curso",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/reclamos?docenteId={{docenteId}}&estado=ABIERTO",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reclamos"
+              ],
+              "query": [
+                {
+                  "key": "docenteId",
+                  "value": "{{docenteId}}"
+                },
+                {
+                  "key": "estado",
+                  "value": "ABIERTO"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Hay 1 reclamo abierto\", function () { pm.expect(pm.response.json().length).to.eql(1); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Un estudiante NO puede responder reclamos (403)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reclamos/{{reclamoId}}/respuesta",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reclamos",
+                "{{reclamoId}}",
+                "respuesta"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docenteId\": {{estudianteId}},\n  \"decision\": \"ACEPTADO\",\n  \"respuesta\": \"Me acepto yo\",\n  \"notaNueva\": 5.0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 403\", function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Aceptar sin nota nueva (400)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reclamos/{{reclamoId}}/respuesta",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reclamos",
+                "{{reclamoId}}",
+                "respuesta"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docenteId\": {{docenteId}},\n  \"decision\": \"ACEPTADO\",\n  \"respuesta\": \"Tiene razon\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 400\", function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Docente acepta el reclamo y sube la nota a 3.0",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reclamos/{{reclamoId}}/respuesta",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reclamos",
+                "{{reclamoId}}",
+                "respuesta"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docenteId\": {{docenteId}},\n  \"decision\": \"ACEPTADO\",\n  \"respuesta\": \"Revisada la rubrica, se ajusta la nota\",\n  \"notaNueva\": 3.0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "var j = pm.response.json();",
+                  "pm.test(\"ACEPTADO con nota 2.0 -> 3.0\", function () { pm.expect(j.estado).to.eql(\"ACEPTADO\"); pm.expect(j.notaAnterior).to.eql(2); pm.expect(j.notaNueva).to.eql(3); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Responder otra vez el mismo reclamo (409)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reclamos/{{reclamoId}}/respuesta",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reclamos",
+                "{{reclamoId}}",
+                "respuesta"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docenteId\": {{docenteId}},\n  \"decision\": \"RECHAZADO\",\n  \"respuesta\": \"Otra vez\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 409\", function () { pm.response.to.have.status(409); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "La nota final se recalcula: 3.75",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/seguimiento/cursos/{{cursoId}}/estudiantes/{{estudianteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "seguimiento",
+                "cursos",
+                "{{cursoId}}",
+                "estudiantes",
+                "{{estudianteId}}"
+              ]
+            },
+            "description": "Corte3 pasa de 2.0 a 3.0: 3.5*30% + 5.0*30% + 3.0*40% = 3.75"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Nota final 3.75\", function () { pm.expect(pm.response.json().notaFinal).to.eql(3.75); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Estudiante 1 reclama tambien la nota de A2 (3.0)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reclamos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reclamos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entregaId\": {{entrega2Id}},\n  \"estudianteId\": {{estudianteId}},\n  \"motivo\": \"Creo que la respuesta merecia mayor puntaje\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.collectionVariables.set(\"reclamo2Id\", pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Docente rechaza el segundo reclamo",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reclamos/{{reclamo2Id}}/respuesta",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reclamos",
+                "{{reclamo2Id}}",
+                "respuesta"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docenteId\": {{docenteId}},\n  \"decision\": \"RECHAZADO\",\n  \"respuesta\": \"La respuesta omitio dos criterios de la rubrica\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"RECHAZADO y la nota no cambia\", function () { var j = pm.response.json(); pm.expect(j.estado).to.eql(\"RECHAZADO\"); pm.expect(j.notaNueva).to.eql(null); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "El estudiante recibio la respuesta por notificacion",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notificaciones?usuarioId={{estudianteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notificaciones"
+              ],
+              "query": [
+                {
+                  "key": "usuarioId",
+                  "value": "{{estudianteId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Hay 2 RESPUESTA_RECLAMO\", function () { var t = pm.response.json().filter(function (n) { return n.tipo === \"RESPUESTA_RECLAMO\"; }); pm.expect(t.length).to.eql(2); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "15 Estudiante: solicitud de certificados",
+      "item": [
+        {
+          "name": "Estudiante 2 aun no aprobo: no se emite (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/certificados",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "certificados"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estudianteId\": {{estudiante2Id}},\n  \"cursoId\": {{cursoId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 400\", function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Estudiante 1 solicita su certificado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/certificados",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "certificados"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estudianteId\": {{estudianteId}},\n  \"cursoId\": {{cursoId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.collectionVariables.set(\"certificadoId\", pm.response.json().id);",
+                  "pm.collectionVariables.set(\"certCodigo\", pm.response.json().codigo);",
+                  "pm.test(\"Emitido con nota 3.75\", function () { var j = pm.response.json(); pm.expect(j.estado).to.eql(\"EMITIDO\"); pm.expect(j.notaFinal).to.eql(3.75); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Certificado duplicado (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/certificados",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "certificados"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estudianteId\": {{estudianteId}},\n  \"cursoId\": {{cursoId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 409\", function () { pm.response.to.have.status(409); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Consultar certificados del estudiante",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/certificados?estudianteId={{estudianteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "certificados"
+              ],
+              "query": [
+                {
+                  "key": "estudianteId",
+                  "value": "{{estudianteId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Hay 1\", function () { pm.expect(pm.response.json().length).to.eql(1); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Constancia en texto",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/certificados/{{certificadoId}}/documento",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "certificados",
+                "{{certificadoId}}",
+                "documento"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Es texto con el codigo\", function () { pm.expect(pm.response.text()).to.include(\"CERTIFICADO DE APROBACION\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Verificar codigo valido",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/certificados/verificar/{{certCodigo}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "certificados",
+                "verificar",
+                "{{certCodigo}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Valido\", function () { pm.expect(pm.response.json().valido).to.eql(true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Verificar codigo falso",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/certificados/verificar/CERT-NOEXISTE",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "certificados",
+                "verificar",
+                "CERT-NOEXISTE"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"No valido\", function () { pm.expect(pm.response.json().valido).to.eql(false); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "16 Docente: foros y chat",
+      "item": [
+        {
+          "name": "Docente abre un foro",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/foros",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "foros"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cursoId\": {{cursoId}},\n  \"docenteId\": {{docenteId}},\n  \"titulo\": \"Dudas sobre trampas de monitoreo\",\n  \"descripcion\": \"Publique sus preguntas\",\n  \"tipo\": \"FORO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.collectionVariables.set(\"foroId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Docente abre un chat sincronico",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/foros",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "foros"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cursoId\": {{cursoId}},\n  \"docenteId\": {{docenteId}},\n  \"titulo\": \"Chat de repaso del parcial\",\n  \"tipo\": \"CHAT\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.collectionVariables.set(\"chatId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Un estudiante NO puede abrir foros (403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/foros",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "foros"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cursoId\": {{cursoId}},\n  \"docenteId\": {{estudianteId}},\n  \"titulo\": \"Intruso\",\n  \"tipo\": \"FORO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 403\", function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Estudiante 1 publica en el chat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/foros/{{chatId}}/mensajes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "foros",
+                "{{chatId}}",
+                "mensajes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"autorId\": {{estudianteId}},\n  \"contenido\": \"Hola, tengo una duda sobre el parcial\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.collectionVariables.set(\"mensajeId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Docente responde en el chat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/foros/{{chatId}}/mensajes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "foros",
+                "{{chatId}}",
+                "mensajes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"autorId\": {{docenteId}},\n  \"contenido\": \"Cuentame cual es tu duda\",\n  \"respuestaAId\": {{mensajeId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.collectionVariables.set(\"mensaje2Id\", pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Estudiante 2 publica en el chat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/foros/{{chatId}}/mensajes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "foros",
+                "{{chatId}}",
+                "mensajes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"autorId\": {{estudiante2Id}},\n  \"contenido\": \"Yo tambien quiero saber\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 201\", function () { pm.response.to.have.status(201); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Chat: solo los mensajes nuevos (despues del primero)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/foros/{{chatId}}/mensajes?usuarioId={{estudianteId}}&despuesDeId={{mensajeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "foros",
+                "{{chatId}}",
+                "mensajes"
+              ],
+              "query": [
+                {
+                  "key": "usuarioId",
+                  "value": "{{estudianteId}}"
+                },
+                {
+                  "key": "despuesDeId",
+                  "value": "{{mensajeId}}"
+                }
+              ]
+            },
+            "description": "El cliente consulta cada pocos segundos pasando el id del ultimo mensaje recibido (comunicacion sincronica por sondeo)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Trae solo los 2 mensajes nuevos\", function () { pm.expect(pm.response.json().length).to.eql(2); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Un docente ajeno al curso no puede ver el chat (403)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/foros/{{chatId}}/mensajes?usuarioId={{docente2Id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "foros",
+                "{{chatId}}",
+                "mensajes"
+              ],
+              "query": [
+                {
+                  "key": "usuarioId",
+                  "value": "{{docente2Id}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 403\", function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar foros del curso",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/foros?cursoId={{cursoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "foros"
+              ],
+              "query": [
+                {
+                  "key": "cursoId",
+                  "value": "{{cursoId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Hay 2 foros y el chat tiene 3 mensajes\", function () { var j = pm.response.json(); pm.expect(j.length).to.eql(2); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Docente cierra el chat",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/foros/{{chatId}}/estado?docenteId={{docenteId}}&abierto=false",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "foros",
+                "{{chatId}}",
+                "estado"
+              ],
+              "query": [
+                {
+                  "key": "docenteId",
+                  "value": "{{docenteId}}"
+                },
+                {
+                  "key": "abierto",
+                  "value": "false"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Cerrado\", function () { pm.expect(pm.response.json().abierto).to.eql(false); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Publicar en un chat cerrado (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/foros/{{chatId}}/mensajes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "foros",
+                "{{chatId}}",
+                "mensajes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"autorId\": {{estudianteId}},\n  \"contenido\": \"Llego tarde\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 409\", function () { pm.response.to.have.status(409); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "17 Notificaciones",
+      "item": [
+        {
+          "name": "Bandeja del estudiante 1",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notificaciones?usuarioId={{estudianteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notificaciones"
+              ],
+              "query": [
+                {
+                  "key": "usuarioId",
+                  "value": "{{estudianteId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.collectionVariables.set(\"notificacionId\", pm.response.json()[0].id);",
+                  "pm.test(\"Tiene varias notificaciones\", function () { pm.expect(pm.response.json().length).to.be.above(5); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Marcar una como leida",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notificaciones/{{notificacionId}}/leida",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notificaciones",
+                "{{notificacionId}}",
+                "leida"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Leida\", function () { pm.expect(pm.response.json().leida).to.eql(true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Coordinador notifica a todos los estudiantes",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/notificaciones/enviar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notificaciones",
+                "enviar"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remitenteId\": {{coordinadorId}},\n  \"destino\": \"ESTUDIANTES\",\n  \"titulo\": \"Recordatorio institucional\",\n  \"mensaje\": \"Recuerden revisar el calendario academico\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"Llego a 2 estudiantes\", function () { pm.expect(pm.response.json().destinatarios).to.eql(2); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Coordinador notifica a todos los docentes",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/notificaciones/enviar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notificaciones",
+                "enviar"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remitenteId\": {{coordinadorId}},\n  \"destino\": \"DOCENTES\",\n  \"titulo\": \"Reunion de docentes\",\n  \"mensaje\": \"Reunion el viernes\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"Llego a 2 docentes\", function () { pm.expect(pm.response.json().destinatarios).to.eql(2); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Docente notifica a los estudiantes de su curso",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/notificaciones/enviar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notificaciones",
+                "enviar"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remitenteId\": {{docenteId}},\n  \"destino\": \"CURSO\",\n  \"cursoId\": {{cursoId}},\n  \"titulo\": \"Entrega del proyecto\",\n  \"mensaje\": \"Recuerden el plazo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"Llego a 2\", function () { pm.expect(pm.response.json().destinatarios).to.eql(2); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Un docente NO puede notificar a todos (403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/notificaciones/enviar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notificaciones",
+                "enviar"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remitenteId\": {{docenteId}},\n  \"destino\": \"TODOS\",\n  \"titulo\": \"Spam\",\n  \"mensaje\": \"No permitido\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 403\", function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Un estudiante NO puede enviar notificaciones (403)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/notificaciones/enviar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notificaciones",
+                "enviar"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remitenteId\": {{estudianteId}},\n  \"destino\": \"USUARIO\",\n  \"usuarioId\": {{docenteId}},\n  \"titulo\": \"Hola\",\n  \"mensaje\": \"No permitido\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 403\", function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Solo no leidas del estudiante 2",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notificaciones?usuarioId={{estudiante2Id}}&soloNoLeidas=true",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notificaciones"
+              ],
+              "query": [
+                {
+                  "key": "usuarioId",
+                  "value": "{{estudiante2Id}}"
+                },
+                {
+                  "key": "soloNoLeidas",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Marcar todas como leidas",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notificaciones/usuario/{{estudiante2Id}}/leer-todas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notificaciones",
+                "usuario",
+                "{{estudiante2Id}}",
+                "leer-todas"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Marco varias\", function () { pm.expect(pm.response.json().marcadas).to.be.above(0); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "18 CRUD Evaluacion del curso",
       "item": [
         {
           "name": "Estudiante 1 evalua el curso",
@@ -3127,10 +5897,10 @@
       ]
     },
     {
-      "name": "12 Estadisticas",
+      "name": "19 Estadisticas y reportes",
       "item": [
         {
-          "name": "Estadisticas del curso",
+          "name": "Estadisticas del curso (docente)",
           "request": {
             "method": "GET",
             "header": [],
@@ -3191,12 +5961,500 @@
               }
             }
           ]
+        },
+        {
+          "name": "Reporte de la plataforma (coordinador)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/reportes/plataforma?coordinadorId={{coordinadorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reportes",
+                "plataforma"
+              ],
+              "query": [
+                {
+                  "key": "coordinadorId",
+                  "value": "{{coordinadorId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "var j = pm.response.json();",
+                  "pm.test(\"Incluye el curso publicado\", function () { var id = parseInt(pm.collectionVariables.get(\"cursoId\")); var c = j.cursos.find(function (x) { return x.cursoId === id; }); pm.expect(c).to.exist; pm.expect(c.publicado).to.eql(true); pm.expect(c.matriculados).to.eql(2); pm.expect(c.cuposDisponibles).to.eql(28); });",
+                  "pm.test(\"1 certificado emitido y 0 reclamos abiertos\", function () { pm.expect(j.certificadosEmitidos).to.eql(1); pm.expect(j.reclamosAbiertos).to.eql(0); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Un docente NO puede ver el reporte de plataforma (403)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/reportes/plataforma?coordinadorId={{docenteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reportes",
+                "plataforma"
+              ],
+              "query": [
+                {
+                  "key": "coordinadorId",
+                  "value": "{{docenteId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 403\", function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
     {
-      "name": "13 Procedimiento: duplicar curso y eliminar",
+      "name": "20 Archivos (adjuntar un archivo en cada peticion antes de Send)",
       "item": [
+        {
+          "name": "Docente sube el archivo del contenido",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "docenteId",
+                  "value": "{{docenteId}}",
+                  "type": "text"
+                },
+                {
+                  "key": "archivo",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/contenidos/{{contenidoDocId}}/archivo",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "contenidos",
+                "{{contenidoDocId}}",
+                "archivo"
+              ]
+            },
+            "description": "Pestana Body > form-data. En la fila 'archivo' elija un archivo (pdf, docx, txt, zip...) con el boton Select Files."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Tiene archivo\", function () { pm.expect(pm.response.json().tieneArchivo).to.eql(true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Estudiante descarga el material",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/contenidos/{{contenidoDocId}}/archivo?usuarioId={{estudianteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "contenidos",
+                "{{contenidoDocId}}",
+                "archivo"
+              ],
+              "query": [
+                {
+                  "key": "usuarioId",
+                  "value": "{{estudianteId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Estudiante 2 entrega la actividad A2 con archivo",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "actividadId",
+                  "value": "{{act2Id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "estudianteId",
+                  "value": "{{estudiante2Id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "textoRespuesta",
+                  "value": "Adjunto mi taller",
+                  "type": "text"
+                },
+                {
+                  "key": "archivo",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/entregas/archivo",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "entregas",
+                "archivo"
+              ]
+            },
+            "description": "Elija un archivo en la fila 'archivo'."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.collectionVariables.set(\"entregaArchivoId\", pm.response.json().id);",
+                  "pm.test(\"Entrega con archivo\", function () { pm.expect(pm.response.json().tieneArchivo).to.eql(true); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Docente descarga la entrega",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/entregas/{{entregaArchivoId}}/archivo?usuarioId={{docenteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "entregas",
+                "{{entregaArchivoId}}",
+                "archivo"
+              ],
+              "query": [
+                {
+                  "key": "usuarioId",
+                  "value": "{{docenteId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Otro estudiante NO puede descargar esa entrega (403)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/entregas/{{entregaArchivoId}}/archivo?usuarioId={{estudianteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "entregas",
+                "{{entregaArchivoId}}",
+                "archivo"
+              ],
+              "query": [
+                {
+                  "key": "usuarioId",
+                  "value": "{{estudianteId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 403\", function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sin archivo en la peticion (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/entregas/archivo?actividadId={{act2Id}}&estudianteId={{estudiante2Id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "entregas",
+                "archivo"
+              ],
+              "query": [
+                {
+                  "key": "actividadId",
+                  "value": "{{act2Id}}"
+                },
+                {
+                  "key": "estudianteId",
+                  "value": "{{estudiante2Id}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 400\", function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Estas peticiones necesitan que usted seleccione un archivo de su computador, por eso se ejecutan a mano (no en el Runner)."
+    },
+    {
+      "name": "21 Retiro, duplicar curso y eliminaciones",
+      "item": [
+        {
+          "name": "Estudiante 1 no puede retirarse: ya tiene certificado (409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/matriculas/retiro",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "matriculas",
+                "retiro"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estudianteId\": {{estudianteId}},\n  \"cursoId\": {{cursoId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 409\", function () { pm.response.to.have.status(409); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Estudiante 2 se retira del curso",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/matriculas/retiro",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "matriculas",
+                "retiro"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estudianteId\": {{estudiante2Id}},\n  \"cursoId\": {{cursoId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "El cupo queda libre",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/catalogo",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "catalogo"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Quedan 29 cupos\", function () { var id = parseInt(pm.collectionVariables.get(\"cursoId\")); var c = pm.response.json().find(function (x) { return x.id === id; }); pm.expect(c.cuposDisponibles).to.eql(29); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Retirarse sin estar matriculado (404)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/matriculas/retiro",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "matriculas",
+                "retiro"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estudianteId\": {{estudiante2Id}},\n  \"cursoId\": {{cursoId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 404\", function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ]
+        },
         {
           "name": "Duplicar curso para el semestre 2027-1",
           "request": {
@@ -3224,7 +6482,7 @@
                 }
               ]
             },
-            "description": "Copia el curso con sus unidades y actividades (sin matriculas ni entregas)."
+            "description": "Copia el curso con sus unidades y actividades (sin matriculas ni entregas). Queda sin publicar."
           },
           "event": [
             {
@@ -3233,7 +6491,8 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Codigo 201\", function () { pm.response.to.have.status(201); });",
-                  "pm.collectionVariables.set(\"cursoCopiaId\", pm.response.json().id);"
+                  "pm.collectionVariables.set(\"cursoCopiaId\", pm.response.json().id);",
+                  "pm.test(\"Copia sin publicar\", function () { pm.expect(pm.response.json().publicado).to.eql(false); });"
                 ]
               }
             }
@@ -3269,6 +6528,48 @@
                 "exec": [
                   "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
                   "pm.test(\"4 actividades copiadas\", function () { pm.expect(pm.response.json().length).to.eql(4); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Matricular en la copia sin publicar (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/matriculas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "matriculas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estudianteId\": {{estudiante2Id}},\n  \"cursoId\": {{cursoCopiaId}},\n  \"clave\": \"ICA2026\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 400\", function () { pm.response.to.have.status(400); });"
                 ]
               }
             }
@@ -3420,19 +6721,60 @@
           ]
         },
         {
-          "name": "Cancelar matricula del estudiante 1 (borra sus entregas)",
+          "name": "Eliminar contenido",
           "request": {
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/matriculas/{{matriculaId}}",
+              "raw": "{{baseUrl}}/api/contenidos/{{contenidoId}}?docenteId={{docenteId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
-                "matriculas",
-                "{{matriculaId}}"
+                "contenidos",
+                "{{contenidoId}}"
+              ],
+              "query": [
+                {
+                  "key": "docenteId",
+                  "value": "{{docenteId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar foro (con sus mensajes)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/foros/{{foroId}}?docenteId={{docenteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "foros",
+                "{{foroId}}"
+              ],
+              "query": [
+                {
+                  "key": "docenteId",
+                  "value": "{{docenteId}}"
+                }
               ]
             }
           },
@@ -3478,7 +6820,66 @@
           ]
         },
         {
-          "name": "Eliminar unidad",
+          "name": "Eliminar actividad C1 (con su reclamo, entrega y paso de proceso)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/actividades/{{act4Id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "actividades",
+                "{{act4Id}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "El proceso queda con un solo paso",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/procesos/{{procesoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "procesos",
+                "{{procesoId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"1 paso\", function () { pm.expect(pm.response.json().pasos.length).to.eql(1); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar unidad (con actividades y contenidos)",
           "request": {
             "method": "DELETE",
             "header": [],

@@ -1,7 +1,10 @@
 package co.edu.unipiloto.plataforma.controlador;
 
+import co.edu.unipiloto.plataforma.dto.AsignacionDocenteRequest;
+import co.edu.unipiloto.plataforma.dto.ConfiguracionCursoResponse;
 import co.edu.unipiloto.plataforma.dto.CursoRequest;
 import co.edu.unipiloto.plataforma.dto.CursoResponse;
+import co.edu.unipiloto.plataforma.dto.PublicacionCursoRequest;
 import co.edu.unipiloto.plataforma.servicio.CursoServicio;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -56,5 +59,29 @@ public class CursoControlador {
                                   @RequestParam String semestre,
                                   @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFinalizacion) {
         return servicio.duplicar(id, semestre, fechaFinalizacion);
+    }
+
+    /** Docente: que le falta al curso (secciones, porcentajes, contenidos) para estar completo. */
+    @GetMapping("/{id}/configuracion")
+    public ConfiguracionCursoResponse configuracion(@PathVariable Long id) {
+        return servicio.configuracion(id);
+    }
+
+    /** Coordinador: fija objetivos, resultados, cupos y fechas, y publica el curso (notifica al docente y estudiantes). */
+    @PutMapping("/{id}/publicacion")
+    public CursoResponse publicar(@PathVariable Long id, @Valid @RequestBody PublicacionCursoRequest req) {
+        return servicio.publicar(id, req);
+    }
+
+    /** Coordinador: retira el curso del catalogo (solo si no tiene matriculados). */
+    @PutMapping("/{id}/despublicar")
+    public CursoResponse despublicar(@PathVariable Long id, @RequestParam Long coordinadorId) {
+        return servicio.despublicar(id, coordinadorId);
+    }
+
+    /** Coordinador: asigna el docente del curso y le envia una notificacion. */
+    @PutMapping("/{id}/docente")
+    public CursoResponse asignarDocente(@PathVariable Long id, @Valid @RequestBody AsignacionDocenteRequest req) {
+        return servicio.asignarDocente(id, req);
     }
 }

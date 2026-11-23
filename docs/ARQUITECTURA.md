@@ -151,3 +151,46 @@ Formato de error (todos los casos):
 6. Ejecutar la 11 y 12: evaluacion del curso y estadisticas.
 7. Mostrar la consola H2 con las tablas y la contrasena cifrada.
 8. Cerrar con los atributos de calidad y la limitacion conocida (token JWT para la Parte 2).
+
+
+---
+
+# Parte 2 (Entrega 8)
+
+## 9. Nuevas entidades
+
+`Notificacion`, `Contenido`, `Foro` (tipo FORO o CHAT), `MensajeForo`, `ProcesoFormativo`, `PasoProceso`, `Reclamo`, `Certificado`. `Curso` agrega objetivos, resultadosAprendizaje, cupos, fechaInicio y publicado; `Entrega` agrega rutaArchivo; `Categoria` agrega TAREA y EVALUACION; hay un tercer rol, COORDINADOR.
+
+```
+Rol 1--N Usuario
+Usuario(docente) 1--N Curso 1--N Unidad 1--N Actividad 1--N Entrega N--1 Usuario(estudiante)
+Unidad 1--N Contenido
+Curso 1--N Foro 1--N MensajeForo
+Curso 1--N ProcesoFormativo 1--N PasoProceso N--1 Actividad
+Entrega 1--N Reclamo
+Usuario+Curso 1--1 Certificado
+Usuario 1--N Notificacion
+```
+
+## 10. Decisiones de diseno de la Parte 2
+
+- **Permisos** centralizados en `Permisos`: cada servicio valida el rol del usuario que actua (403) antes de operar.
+- **Procesos de formacion**: el orden se calcula en `ProcesoServicio.calcularPasos` (COMPLETADO / DISPONIBLE / BLOQUEADO) y `EntregaServicio` lo aplica al entregar.
+- **Chat sincronico por sondeo**: el cliente pide `?despuesDeId=` con el id del ultimo mensaje; evita WebSockets y mantiene el backend simple.
+- **Archivos**: nombre guardado con UUID, lista de extensiones permitidas y verificacion contra path traversal.
+- **Notificaciones automaticas** en asignacion, publicacion, matricula, retiro, entrega, calificacion, reclamo y certificado.
+- **Reclamos**: plazo de 10 dias, una sola solicitud abierta por entrega; al aceptar se cambia la nota y se recalcula el progreso.
+
+## 11. Endpoints nuevos
+
+Ver la tabla del README (seccion 8) y Swagger en `/swagger-ui.html`.
+
+## 12. Guion de sustentacion Parte 2 (10 minutos)
+
+1. (1 min) Arquitectura en capas y roles: Coordinador, Docente, Estudiante.
+2. (2 min) Coordinador: asignar docente, publicar curso, catalogo, notificacion al docente.
+3. (2 min) Docente: contenidos, configuracion, proceso de formacion; mostrar el 400 al saltarse el orden.
+4. (2 min) Estudiante: inscripcion, entrega con archivo, notas y porcentajes.
+5. (1 min) Reclamo aceptado y recalculo de la nota (3.35 a 3.75).
+6. (1 min) Certificado y verificacion del codigo.
+7. (1 min) Foros/chat, reportes y limitaciones (sin JWT, chat por sondeo).

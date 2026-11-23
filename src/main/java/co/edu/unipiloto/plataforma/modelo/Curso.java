@@ -43,6 +43,18 @@ public class Curso {
     @JoinColumn(name = "oferta_id")
     private OfertaEducativa oferta;
 
+    @Column(length = 2000)
+    private String objetivos;
+
+    @Column(length = 2000)
+    private String resultadosAprendizaje;
+
+    private Integer cupos;
+
+    private LocalDateTime fechaInicio;
+
+    private Boolean publicado;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -76,6 +88,21 @@ public class Curso {
     public OfertaEducativa getOferta() { return oferta; }
     public void setOferta(OfertaEducativa oferta) { this.oferta = oferta; }
 
+    public String getObjetivos() { return objetivos; }
+    public void setObjetivos(String objetivos) { this.objetivos = objetivos; }
+
+    public String getResultadosAprendizaje() { return resultadosAprendizaje; }
+    public void setResultadosAprendizaje(String resultadosAprendizaje) { this.resultadosAprendizaje = resultadosAprendizaje; }
+
+    public Integer getCupos() { return cupos; }
+    public void setCupos(Integer cupos) { this.cupos = cupos; }
+
+    public LocalDateTime getFechaInicio() { return fechaInicio; }
+    public void setFechaInicio(LocalDateTime fechaInicio) { this.fechaInicio = fechaInicio; }
+
+    public Boolean getPublicado() { return publicado; }
+    public void setPublicado(Boolean publicado) { this.publicado = publicado; }
+
     /** Peso (en porcentaje) del corte 1, 2 o 3 en la nota final. */
     public double pesoDelCorte(int corte) {
         switch (corte) {
@@ -94,6 +121,11 @@ public class Curso {
     /** true cuando ya paso la fecha de finalizacion del curso. */
     public boolean yaTermino() {
         return fechaFinalizacion != null && LocalDateTime.now().isAfter(fechaFinalizacion);
+    }
+
+    /** true cuando el coordinador ya publico el curso. */
+    public boolean estaPublicado() {
+        return Boolean.TRUE.equals(publicado);
     }
 
     /** true si el curso exige clave para matricularse. */
